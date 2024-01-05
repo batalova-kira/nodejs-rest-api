@@ -39,10 +39,10 @@ const login = async (req, res) => {
     if (!passwordCompare) {
         throw HttpError(401, "Email or password is wrong");
     }
-    const { _id: id } = user;
-    const payload = { id };
+
+    const payload = { id: user._id };
     const token = jwt.sign(payload, JWT_SECRET, { expiresIn: "23h" });
-    await User.findByIdAndUpdate(id, { token });
+    await User.findByIdAndUpdate(user._id, { token });
     res.json({ token });
 };
 
@@ -58,9 +58,21 @@ const logout = async (req, res) => {
     res.json({ message: "Status: 204 No Content" });
 };
 
+const subscription = async (req, res) => {
+    const { _id } = req.user;
+
+    console.log();
+    const result = await User.findOneAndUpdate(_id, req.body, {
+        new: true,
+        runValidators: true,
+    });
+    res.json(result);
+};
+
 export default {
     register: ctrlWrapper(register),
     login: ctrlWrapper(login),
     getCurrent: ctrlWrapper(getCurrent),
     logout: ctrlWrapper(logout),
+    subscription: ctrlWrapper(subscription),
 };

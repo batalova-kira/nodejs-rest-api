@@ -63,9 +63,9 @@ export const contactUpdateSchema = Joi.object({
 });
 
 export const contactUpdateFavorite = Joi.object({
-    favorite: Joi.boolean(),
-    // .required()
-    // .messages({ "any.required": "missing field favorite" }),
+    favorite: Joi.boolean()
+        .required()
+        .messages({ "any.required": "missing field favorite" }),
 });
 
 const Contact = model("contact", contactSchema);

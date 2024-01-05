@@ -5,6 +5,8 @@ import Joi from "joi";
 const emailRegexp =
     /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/;
 
+const _enum = ["starter", "pro", "business"];
+
 const userSchema = new Schema(
     {
         password: {
@@ -20,7 +22,7 @@ const userSchema = new Schema(
         },
         subscription: {
             type: String,
-            enum: ["starter", "pro", "business"],
+            enum: _enum,
             default: "starter",
         },
         token: String,
@@ -37,6 +39,13 @@ userSchema.post("findOneAndUpdate", handleSaveError);
 export const userSignupSchema = Joi.object({
     email: Joi.string().pattern(emailRegexp).required(),
     password: Joi.string().min(6).required(),
+});
+
+export const userUpdateSubscription = Joi.object({
+    subscription: Joi.string()
+        .valid(..._enum)
+        .required()
+        .messages({ "any.required": "missing field subscription" }),
 });
 
 const User = model("user", userSchema);
