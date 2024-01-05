@@ -43,7 +43,13 @@ const login = async (req, res) => {
     const payload = { id: user._id };
     const token = jwt.sign(payload, JWT_SECRET, { expiresIn: "23h" });
     await User.findByIdAndUpdate(user._id, { token });
-    res.json({ token });
+    res.json({
+        token,
+        user: {
+            email: user.email,
+            subscription: user.subscription,
+        },
+    });
 };
 
 const getCurrent = async (req, res) => {
@@ -61,7 +67,6 @@ const logout = async (req, res) => {
 const subscription = async (req, res) => {
     const { _id } = req.user;
 
-    console.log();
     const result = await User.findOneAndUpdate(_id, req.body, {
         new: true,
         runValidators: true,

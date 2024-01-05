@@ -8,7 +8,6 @@ const getAll = async (req, res) => {
 
     const { page = 1, limit = 20, favorite, name } = req.query;
     const skip = (page - 1) * limit;
-    console.log(req.query);
 
     const result = await Contact.find(
         name && favorite ? { owner, name: "Chaim Lewis", favorite } : { owner },
