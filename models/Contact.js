@@ -18,6 +18,11 @@ const contactSchema = new Schema(
             type: Boolean,
             default: false,
         },
+        owner: {
+            type: Schema.Types.ObjectId,
+            required: true,
+            ref: "user",
+        },
     },
     { versionKey: false, timestamps: true }
 );
@@ -58,9 +63,9 @@ export const contactUpdateSchema = Joi.object({
 });
 
 export const contactUpdateFavorite = Joi.object({
-    favorite: Joi.boolean(),
-    // .required()
-    // .messages({ "any.required": "missing field favorite" }),
+    favorite: Joi.boolean()
+        .required()
+        .messages({ "any.required": "missing field favorite" }),
 });
 
 const Contact = model("contact", contactSchema);
