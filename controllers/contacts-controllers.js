@@ -53,9 +53,7 @@ const updateById = async (req, res) => {
 const updateStatusContact = async (req, res) => {
     const { id: _id } = req.params;
     const { _id: owner } = req.user;
-    // if (!req.body.hasOwnProperty("favorite")) {
-    //     throw HttpError(400, "missing field favorite");
-    // }
+
     const result = await Contact.findOneAndUpdate({ _id, owner }, req.body, {
         new: true,
         runValidators: true,
