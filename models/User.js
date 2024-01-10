@@ -25,6 +25,9 @@ const userSchema = new Schema(
             enum: _enum,
             default: "starter",
         },
+        avatarURL: {
+            type: String,
+        },
         token: String,
     },
     { versionKey: false, timeseries: true }
