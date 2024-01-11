@@ -2,6 +2,7 @@ import multer from "multer";
 import path from "path";
 // import { HttpError } from "../helpers/index.js";
 
+//абсолютний шлях до файлу
 const destination = path.resolve("temp");
 
 const storage = multer.diskStorage({
@@ -15,6 +16,7 @@ const storage = multer.diskStorage({
     },
 });
 
+//обмеження розміру файла
 const limits = {
     fileSize: 1024 * 1024 * 5,
 };
