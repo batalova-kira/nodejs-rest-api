@@ -87,10 +87,14 @@ const subscription = async (req, res) => {
 };
 
 const updateAvatar = async (req, res) => {
+    const { _id } = req.user;
     const { path: oldPath, filename } = req.file;
     const newPath = path.join(avatarsPath, filename);
     await fs.rename(oldPath, newPath);
-    // const avatar = path.join("avatars", filename);
+    const avatar = path.join("avatars", filename);
+    await User.findByIdAndUpdate(_id, { avatarURL: avatar });
+
+    res.json({ avatarURL: avatar });
 };
 
 export default {

@@ -53,4 +53,5 @@ export const userUpdateSubscription = Joi.object({
 });
 
 const User = model("user", userSchema);
+
 export default User;
