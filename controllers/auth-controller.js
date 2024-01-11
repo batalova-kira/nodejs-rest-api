@@ -4,6 +4,7 @@ import User from "../models/User.js";
 import fs from "fs/promises";
 import path from "path";
 import gravatar from "gravatar";
+import Jimp from "jimp";
 
 import { HttpError } from "../helpers/index.js";
 
@@ -90,8 +91,12 @@ const updateAvatar = async (req, res) => {
     const { _id } = req.user;
     const { path: oldPath, filename } = req.file;
     const newPath = path.join(avatarsPath, filename);
+    const image = await Jimp.read(oldPath);
+    image.resize(250, 250).write(newPath);
     await fs.rename(oldPath, newPath);
+
     const avatar = path.join("avatars", filename);
+
     await User.findByIdAndUpdate(_id, { avatarURL: avatar });
 
     res.json({ avatarURL: avatar });
