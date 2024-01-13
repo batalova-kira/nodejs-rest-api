@@ -91,8 +91,19 @@ const updateAvatar = async (req, res) => {
     const { _id } = req.user;
     const { path: oldPath, filename } = req.file;
     const newPath = path.join(avatarsPath, filename);
-    const image = await Jimp.read(oldPath);
-    image.resize(250, 250).write(newPath);
+    // const image = await Jimp.read(oldPath);
+    // image.resize(250, 250).write(newPath);
+    Jimp.read(oldPath)
+        .then((img) => {
+            return img
+                .resize(250, 250) // resize
+                .quality(70) // set JPEG quality
+                .write(newPath); // save
+        })
+        .catch((err) => {
+            console.error(err);
+        });
+
     await fs.rename(oldPath, newPath);
 
     const avatar = path.join("avatars", filename);
