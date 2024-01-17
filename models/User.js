@@ -25,6 +25,10 @@ const userSchema = new Schema(
             enum: _enum,
             default: "starter",
         },
+        avatarURL: {
+            type: String,
+            required: [true, "avatarURL is required"],
+        },
         token: String,
     },
     { versionKey: false, timeseries: true }
@@ -49,4 +53,5 @@ export const userUpdateSubscription = Joi.object({
 });
 
 const User = model("user", userSchema);
+
 export default User;

@@ -1,6 +1,10 @@
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import User from "../models/User.js";
+import fs from "fs/promises";
+import path from "path";
+import gravatar from "gravatar";
+import Jimp from "jimp";
 
 import { HttpError } from "../helpers/index.js";
 
@@ -8,8 +12,13 @@ import { ctrlWrapper } from "../decorators/index.js";
 
 const { JWT_SECRET } = process.env;
 
+const avatarsPath = path.resolve("public", "avatars");
+
 const register = async (req, res) => {
     const { email, password } = req.body;
+
+    const gravatarUrl = gravatar.url(email);
+
     const user = await User.findOne({ email });
 
     if (user) {
@@ -17,7 +26,11 @@ const register = async (req, res) => {
     }
 
     const hashPassword = await bcrypt.hash(password, 10);
-    const newUser = await User.create({ ...req.body, password: hashPassword });
+    const newUser = await User.create({
+        ...req.body,
+        avatarURL: gravatarUrl,
+        password: hashPassword,
+    });
 
     res.json({
         user: {
@@ -74,10 +87,34 @@ const subscription = async (req, res) => {
     res.json(result);
 };
 
+const updateAvatar = async (req, res) => {
+    const { _id } = req.user;
+    const { path: oldPath, filename } = req.file;
+    // Створюємо новий шлях до файлу
+    const newPath = path.join(avatarsPath, filename);
+
+    await fs.rename(oldPath, newPath);
+    // Оброби аватарку пакетом jimp і постав для неї розміри 250 на 250
+    await Jimp.read(newPath)
+        .then((image) => {
+            image.quality(70).resize(250, 250).writeAsync(newPath);
+        })
+        .catch((error) => {
+            console.log(error.message);
+        });
+    // Шлях де лишається файл
+    const avatar = path.join("avatars", filename);
+    // Перезаписуємо на user avatarURL
+    await User.findByIdAndUpdate(_id, { avatarURL: avatar });
+
+    res.json({ avatarURL: avatar });
+};
+
 export default {
     register: ctrlWrapper(register),
     login: ctrlWrapper(login),
     getCurrent: ctrlWrapper(getCurrent),
     logout: ctrlWrapper(logout),
     subscription: ctrlWrapper(subscription),
+    updateAvatar: ctrlWrapper(updateAvatar),
 };
