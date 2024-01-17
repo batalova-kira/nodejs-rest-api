@@ -70,7 +70,7 @@ const getCurrent = async (req, res) => {
 
     res.json({ email, subscription });
 };
-
+// розлогинитися
 const logout = async (req, res) => {
     const { _id } = req.user;
     await User.findByIdAndUpdate(_id, { token: "" });
