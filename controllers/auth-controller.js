@@ -90,24 +90,21 @@ const subscription = async (req, res) => {
 const updateAvatar = async (req, res) => {
     const { _id } = req.user;
     const { path: oldPath, filename } = req.file;
+    // Створюємо новий шлях до файлу
     const newPath = path.join(avatarsPath, filename);
-    // const image = await Jimp.read(oldPath);
-    // image.resize(250, 250).write(newPath);
-    Jimp.read(oldPath)
-        .then((img) => {
-            return img
-                .resize(250, 250) // resize
-                .quality(70) // set JPEG quality
-                .write(newPath); // save
-        })
-        .catch((err) => {
-            console.error(err);
-        });
 
     await fs.rename(oldPath, newPath);
-
+    // Оброби аватарку пакетом jimp і постав для неї розміри 250 на 250
+    await Jimp.read(newPath)
+        .then((image) => {
+            image.quality(70).resize(250, 250).writeAsync(newPath);
+        })
+        .catch((error) => {
+            console.log(error.message);
+        });
+    // Шлях де лишається файл
     const avatar = path.join("avatars", filename);
-
+    // Перезаписуємо на user avatarURL
     await User.findByIdAndUpdate(_id, { avatarURL: avatar });
 
     res.json({ avatarURL: avatar });
