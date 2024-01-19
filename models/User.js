@@ -29,6 +29,14 @@ const userSchema = new Schema(
             type: String,
             required: [true, "avatarURL is required"],
         },
+        verify: {
+            type: Boolean,
+            default: false,
+        },
+        verificationToken: {
+            type: String,
+            // required: [true, "Verify token is required"],
+        },
         token: String,
     },
     { versionKey: false, timeseries: true }
@@ -52,6 +60,9 @@ export const userUpdateSubscription = Joi.object({
         .messages({ "any.required": "missing field subscription" }),
 });
 
+export const emailSchema = Joi.object({
+    email: Joi.string().pattern(emailRegexp).required(),
+});
 const User = model("user", userSchema);
 
 export default User;
