@@ -53,14 +53,14 @@ const register = async (req, res) => {
 //Додавання відправки email користувачу з посиланням для верифікації
 const verifyEmail = async (req, res) => {
     const { verificationToken } = req.params;
-    const user = User.findOne({ verificationToken });
+    const user = await User.findOne({ verificationToken });
     if (!user) {
         throw HttpError(404, "User not found");
     }
 
     await User.findByIdAndUpdate(user._id, {
         verify: true,
-        verificationToken: "", //питання
+        verificationToken: null, //питання
     });
 
     res.json({ message: "Verification successful" });
